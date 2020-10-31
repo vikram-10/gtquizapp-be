@@ -58,18 +58,10 @@ app.post("/userlogin",async function(req,res){
     try{
         let client=await mongoClient.connect(process.env.URL);
         let db=client.db('gtquizapp');
-        let user=await db.collection('users').find(req.body.userEmail);
         await db.collection('users').insertOne(req.body);
-        if(user==undefined){
-            res.json({
-                "status":1
-            });
-        }
-        else{
-            res.json({
-                "status":0
-            })
-        }
+        res.json({
+            "status":1
+        });
     }
     catch(err){
         console.log(err);
