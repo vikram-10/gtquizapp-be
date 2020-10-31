@@ -6,6 +6,8 @@ let mongodb=require('mongodb');
 let mongoClient=mongodb.MongoClient;
 let dotenv=require('dotenv');
 const { emitWarning } = require('process');
+var cookieParser = require('cookie-parser')
+app.use(cookieParser())
 dotenv.config();
 app.use(cors({
     origin:"*"
@@ -22,6 +24,30 @@ app.get('/getusers',async function(req,res){
         let db=client.db('gtquizapp');
         let allUsers=await db.collection('users').find({}).toArray();
         res.json(allUsers);
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.put('/submitans',async function(req,res){
+    try{
+        let email=req.header('userEmail');
+        console.log(email);
+        let client=await mongoClient.connect(process.env.URL);
+        let db=client.db('gtquizapp');
+        console.log('connected to DB');
+        let allUsers=await db.collection('users').findOneAndUpdate({userEmail:email},{$set:{answers:req.body}});
+        if(email==null){
+            res.json({
+                "status":0
+            });
+        }
+        else{
+            res.json({
+                "status":1
+            });
+        }
     }
     catch(err){
         console.log(err);
